@@ -33,6 +33,10 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
    * NOTE: Consult particle_filter.h for more information about this method 
    *   (and others in this file).
    */
+  
+  if (is_initialized) {
+    return;
+  }
 
   // Set the number of particles
   num_particles = 100;
@@ -101,22 +105,24 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted, vector<Landm
    *   probably find it useful to implement this method and use it as a helper 
    *   during the updateWeights phase.
    */
-  for (unsigned i = 0; i < observations.size(); i++){
-    // initialize min_distance and 
+  for (unsigned i = 0; i < observations.size(); i++){ // loop over observation
+    // initialize min_distance with a large number 
     double min_distance = std::numeric_limits<double>::max(); 
     // initialize nearst neighbor map id
     int map_id = -1;
 
-    for (unsigned j = 0; j < predicted.size(); j++){
+    for (unsigned j = 0; j < predicted.size(); j++){ // loop over prediction
+
       double distance_ij = dist(observations[i].x, observations[i].y, predicted[j].x, predicted[j].y);
+      // find the least distnace over all preditions
       if (distance_ij < min_distance){
         min_distance = distance_ij;
         map_id = predicted[j].id;
       }
-      observations[i].id = map_id; 
-
-    }
-  }
+      
+    } // loop over prediction
+    observations[i].id = map_id; 
+  } // loop over observation
 }
 
 void ParticleFilter::updateWeights(double sensor_range, double std_landmark[], 
@@ -169,7 +175,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     // initialize weight
     particles[i].weight = 1.0;
 
-      for (unsigned int j = 0; j < transformed_obs.size(); j++) {// loop over transformed_obs
+    for (unsigned int j = 0; j < transformed_obs.size(); j++) {// loop over transformed_obs
         
         double obs_x = transformed_obs[j].x;
         double obs_y = transformed_obs[j].y;
@@ -195,7 +201,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         
         particles[i].weight *= weight;
 
-      }// loop over transformed_obs
+    }// loop over transformed_obs
 
   } // loop over particles
 }
